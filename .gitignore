@@ -6,3 +6,5 @@ build/
 *.p12
 *.jks
 *.log
+__pycache__/
+*.pyc

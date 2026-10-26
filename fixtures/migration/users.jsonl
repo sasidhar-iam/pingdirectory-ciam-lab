@@ -1,0 +1,2 @@
+{"customerId":"customer-001","displayName":"Sample Customer","surname":"Customer","entitlements":["accounts:read"]}
+{"customerId":"customer-002","displayName":"Second Customer","surname":"Customer","entitlements":["profile:read"]}

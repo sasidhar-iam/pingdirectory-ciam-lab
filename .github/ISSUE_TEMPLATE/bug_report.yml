@@ -1,0 +1,21 @@
+name: Example or runbook problem
+description: Report an issue using sample data only
+title: "[Example] "
+body:
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario, file and versions
+      description: Include runtime and product versions if relevant. Do not attach secrets or real customer data.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps, expected result and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Redacted evidence and checks performed

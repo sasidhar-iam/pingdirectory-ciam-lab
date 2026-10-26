@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {profilesToLdif} from '../src/jsonl-to-ldif.mjs';
+const row={customerId:'customer-001',displayName:'Sample Customer',surname:'Customer',entitlements:['accounts:read']};
+test('profile conversion includes safe DN and auxiliary attributes',()=>{const s=profilesToLdif([row]);assert(s.includes('dn: uid=customer-001,ou=people,dc=example,dc=test'));assert(s.includes('labEntitlement: accounts:read'));assert(!s.includes('userPassword'));});
+test('duplicate identifier fails whole batch',()=>assert.throws(()=>profilesToLdif([row,row]),/duplicate/));
+test('DN injection rejected',()=>assert.throws(()=>profilesToLdif([{...row,customerId:'x,ou=admins'}]),/invalid_customer/));
+test('multiline display name is base64 encoded',()=>{const s=profilesToLdif([{...row,displayName:'Sample\ndn: injected'}]);assert(s.includes('cn:: '));assert(!s.includes('\ndn: injected'));});
+test('password and token fields are never copied',()=>{const s=profilesToLdif([{...row,password:'secret',refreshToken:'secret'}]);assert(!s.includes('secret'));});
+test('missing surname fails',()=>assert.throws(()=>profilesToLdif([{...row,surname:''}])));

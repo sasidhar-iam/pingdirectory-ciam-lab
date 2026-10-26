@@ -1,0 +1,8 @@
+dn: cn=schema
+changetype: modify
+add: attributeTypes
+attributeTypes: ( 1.3.6.1.4.1.32473.100.1 NAME 'labSubjectId' EQUALITY caseExactMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+attributeTypes: ( 1.3.6.1.4.1.32473.100.2 NAME 'labEntitlement' EQUALITY caseExactMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+-
+add: objectClasses
+objectClasses: ( 1.3.6.1.4.1.32473.100.3 NAME 'labProfile' SUP top AUXILIARY MAY ( labSubjectId $ labEntitlement ) )
