@@ -1,0 +1,8 @@
+dn: uid=synthetic-customer-001,ou=people,dc=example,dc=test
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+uid: synthetic-customer-001
+cn: Sample Customer
+sn: Customer

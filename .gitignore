@@ -1,0 +1,8 @@
+node_modules/
+build/
+*.class
+.env
+*.key
+*.p12
+*.jks
+*.log

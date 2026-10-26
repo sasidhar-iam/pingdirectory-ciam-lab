@@ -1,0 +1,12 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {escapeFilter,ldifAttribute} from '../src/ldap-utils.mjs';
+test('ordinary identifier stays readable',()=>assert.equal(escapeFilter('customer-001'),'customer-001'));
+test('filter metacharacters are escaped',()=>assert.equal(escapeFilter('*()\\\0'),'\\2a\\28\\29\\5c\\00'));
+test('Unicode uses escaped UTF-8 bytes',()=>assert.equal(escapeFilter('é'),'\\c3\\a9'));
+test('reject non-string filter input',()=>assert.throws(()=>escapeFilter(null)));
+test('plain LDIF attribute',()=>assert.equal(ldifAttribute('uid','customer-001'),'uid: customer-001'));
+test('empty value has no trailing content',()=>assert.equal(ldifAttribute('description',''),'description:'));
+test('multiline value cannot inject an LDIF record',()=>{const value='safe\ndn: injected';const line=ldifAttribute('description',value);assert(!line.includes('\n'));assert.equal(Buffer.from(line.split(':: ')[1],'base64').toString(),value);});
+test('leading special characters and Unicode use base64',()=>{for(const value of [' secret',':value','<url','é','tail '])assert(ldifAttribute('cn',value).startsWith('cn:: '));});
+test('reject attribute-name injection',()=>assert.throws(()=>ldifAttribute('cn\ndn','x')));
