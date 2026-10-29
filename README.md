@@ -60,3 +60,9 @@ Run the calculator tests with `python3 -m unittest discover -s tools -p 'test_*.
 - [PingDirectory](https://github.com/sasidhar-iam/pingdirectory-ciam-lab)
 - [PingFederate and cloud identity](https://github.com/sasidhar-iam/ping-identity-ciam-lab)
 - [Banking IAM overview and release-impact guide](https://github.com/sasidhar-iam/banking-iam-repo)
+
+## Local customer login lab
+
+Try the [Cedar customer login lab](labs/customer-login/README.md): a login page, three generated fictional accounts, session and role checks, explicit mock mode, and a PingDirectory LDAPS adapter. The Windows guide includes a single-product Docker Compose evaluation setup and a seed step for real directory entries.
+
+The mock app and adapter tests are verified locally. Docker/PingDirectory startup and live user creation still require a licensed local run; they are not claimed as completed by the repository.

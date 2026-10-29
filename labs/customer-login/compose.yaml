@@ -1,0 +1,50 @@
+# Custom single-product local evaluation lab, not a vendor-validated deployment.
+services:
+  pingdirectory:
+    image: ${PINGDIRECTORY_IMAGE:?Choose a current PingDirectory image}
+    hostname: pingdirectory
+    environment:
+      PING_IDENTITY_ACCEPT_EULA: ${PING_IDENTITY_ACCEPT_EULA:?Review and accept licence terms yourself}
+      PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER:?Set your evaluation user privately}
+      PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY:?Set your evaluation key privately}
+      SERVER_PROFILE_URL: ""
+      USER_BASE_DN: dc=example,dc=test
+      ROOT_USER_DN: cn=administrator
+      ROOT_USER_PASSWORD_FILE: /run/secrets/root-user-password
+      ADMIN_USER_PASSWORD_FILE: /run/secrets/admin-password
+      ENCRYPTION_PASSWORD_FILE: /run/secrets/encryption-password
+      KEYSTORE_FILE: /run/secrets/pd-keystore.p12
+      KEYSTORE_PIN_FILE: /run/secrets/keystore-password
+      KEYSTORE_TYPE: pkcs12
+      CERTIFICATE_NICKNAME: lab-server
+      MAKELDIF_USERS: "0"
+      MAX_HEAP_SIZE: 512m
+    ports:
+      - "127.0.0.1:1636:1636"
+      - "127.0.0.1:8443:1443"
+    volumes:
+      - pd-data:/opt/out
+      - ./.local/root-password:/run/secrets/root-user-password:ro
+      - ./.local/admin-password:/run/secrets/admin-password:ro
+      - ./.local/encryption-password:/run/secrets/encryption-password:ro
+      - ./.local/keystore-password:/run/secrets/keystore-password:ro
+      - ./.local/pd-keystore.p12:/run/secrets/pd-keystore.p12:ro
+    mem_limit: 2g
+  tls-init:
+    profiles: [tools]
+    image: ${PINGDIRECTORY_IMAGE:?Choose a current PingDirectory image}
+    user: "0:0"
+    entrypoint: [keytool]
+    command: ["-genkeypair", "-alias", "lab-server", "-keyalg", "RSA", "-keysize", "3072", "-sigalg", "SHA256withRSA", "-dname", "CN=localhost", "-ext", "SAN=dns:localhost,dns:pingdirectory,ip:127.0.0.1", "-validity", "30", "-storetype", "PKCS12", "-keystore", "/lab/pd-keystore.p12", "-storepass:file", "/lab/keystore-password", "-keypass:file", "/lab/keystore-password"]
+    volumes:
+      - ./.local:/lab
+  tls-export:
+    profiles: [tools]
+    image: ${PINGDIRECTORY_IMAGE:?Choose a current PingDirectory image}
+    user: "0:0"
+    entrypoint: [keytool]
+    command: ["-exportcert", "-rfc", "-alias", "lab-server", "-keystore", "/lab/pd-keystore.p12", "-storepass:file", "/lab/keystore-password", "-file", "/lab/pd-cert.pem"]
+    volumes:
+      - ./.local:/lab
+volumes:
+  pd-data:
